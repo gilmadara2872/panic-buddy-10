@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Shield, MapPin, AlertTriangle, CheckCircle2, User } from "lucide-react";
+import { Shield, MapPin, AlertTriangle, CheckCircle2, User, History } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
@@ -104,13 +104,22 @@ function PanicScreen() {
             </p>
           </div>
         </div>
-        <Link
-          to="/cadastro"
-          className="grid h-10 w-10 place-items-center rounded-xl bg-accent transition-colors hover:bg-secondary"
-          aria-label="Editar cadastro"
-        >
-          <User className="h-5 w-5 text-foreground" />
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            to="/historico"
+            className="grid h-10 w-10 place-items-center rounded-xl bg-accent transition-colors hover:bg-secondary"
+            aria-label="Ver histórico"
+          >
+            <History className="h-5 w-5 text-foreground" />
+          </Link>
+          <Link
+            to="/cadastro"
+            className="grid h-10 w-10 place-items-center rounded-xl bg-accent transition-colors hover:bg-secondary"
+            aria-label="Editar cadastro"
+          >
+            <User className="h-5 w-5 text-foreground" />
+          </Link>
+        </div>
       </header>
 
       {/* Instruction */}
