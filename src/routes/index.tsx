@@ -1,10 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
 import { Shield, MapPin, AlertTriangle, CheckCircle2, User, History } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
-import { sendPanicAlert } from "@/lib/panic.functions";
 
 export const Route = createFileRoute("/")({
   component: PanicScreen,
