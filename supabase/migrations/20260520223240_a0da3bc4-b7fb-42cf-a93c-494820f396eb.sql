@@ -1,0 +1,1 @@
+CREATE POLICY "Anyone can view panic alerts" ON public.panic_alerts FOR SELECT TO anon, authenticated USING (true);
