@@ -1,9 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { Shield, MapPin, AlertTriangle, CheckCircle2, User, History } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
+import { sendPanicAlert } from "@/lib/panic.functions";
 
 export const Route = createFileRoute("/")({
   component: PanicScreen,
@@ -23,6 +24,7 @@ type Profile = { name: string; phone: string };
 
 function PanicScreen() {
   const navigate = useNavigate();
+  const sendAlert = useServerFn(sendPanicAlert);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [sending, setSending] = useState(false);
   const [lastAlert, setLastAlert] = useState<{
@@ -61,18 +63,20 @@ function PanicScreen() {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
-        const { error } = await supabase.from("panic_alerts").insert({
-          name: profile.name,
-          phone: profile.phone,
-          latitude,
-          longitude,
-        });
-        if (error) {
-          toast.error("Falha ao enviar alerta. Tente novamente.");
-          console.error(error);
-        } else {
+        try {
+          await sendAlert({
+            data: {
+              name: profile.name,
+              phone: profile.phone,
+              latitude,
+              longitude,
+            },
+          });
           toast.success("Alerta enviado! Ajuda foi notificada.");
           setLastAlert({ lat: latitude, lng: longitude, at: new Date() });
+        } catch (err) {
+          toast.error("Falha ao enviar alerta. Tente novamente.");
+          console.error(err);
         }
         setSending(false);
       },
