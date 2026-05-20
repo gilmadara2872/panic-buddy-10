@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -71,20 +72,32 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" },
+      { title: "SafeGuard" },
+      { name: "description", content: "Aplicativo de segurança pessoal com botão de pânico e localização em tempo real." },
+      { name: "author", content: "SafeGuard" },
+      { name: "theme-color", content: "#0a0a1a" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "apple-mobile-web-app-title", content: "SafeGuard" },
+      { property: "og:title", content: "SafeGuard" },
+      { property: "og:description", content: "Aplicativo de segurança pessoal com botão de pânico e localização em tempo real." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:site", content: "@safeguard" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
+      },
+      {
+        rel: "manifest",
+        href: "/manifest.json",
+      },
+      {
+        rel: "apple-touch-icon",
+        href: "/icon-512.png",
       },
     ],
   }),
@@ -110,6 +123,30 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    const isInIframe = (() => {
+      try {
+        return window.self !== window.top;
+      } catch {
+        return true;
+      }
+    })();
+
+    const isPreviewHost =
+      window.location.hostname.includes("id-preview--") ||
+      window.location.hostname.includes("lovableproject.com");
+
+    if ("serviceWorker" in navigator && !isInIframe && !isPreviewHost) {
+      navigator.serviceWorker.register("/sw.js").catch((err) => {
+        console.error("SW registration failed:", err);
+      });
+    } else if ("serviceWorker" in navigator && (isInIframe || isPreviewHost)) {
+      navigator.serviceWorker.getRegistrations().then((regs) => {
+        regs.forEach((r) => r.unregister());
+      });
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
