@@ -21,6 +21,10 @@ export const Route = createFileRoute("/")({
 
 type Profile = { name: string; phone: string };
 
+// URL do webhook do n8n (rodando local). Troque por uma URL pública (ngrok / produção) ao publicar.
+const N8N_WEBHOOK_URL =
+  "http://localhost:5678/webhook/4b60c7f8-59e6-4dfe-8c0e-fd10a18bf14a";
+
 function PanicScreen() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -73,6 +77,20 @@ function PanicScreen() {
         } else {
           toast.success("Alerta enviado! Ajuda foi notificada.");
           setLastAlert({ lat: latitude, lng: longitude, at: new Date() });
+
+          // Dispara webhook do n8n (fire-and-forget)
+          fetch(N8N_WEBHOOK_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: profile.name,
+              phone: profile.phone,
+              latitude,
+              longitude,
+              timestamp: new Date().toISOString(),
+              maps_url: `https://www.google.com/maps?q=${latitude},${longitude}`,
+            }),
+          }).catch((err) => console.warn("n8n webhook falhou:", err));
         }
         setSending(false);
       },
