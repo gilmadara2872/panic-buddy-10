@@ -21,6 +21,10 @@ export const Route = createFileRoute("/")({
 
 type Profile = { name: string; phone: string };
 
+// URL do webhook do n8n (rodando local). Troque por uma URL pública (ngrok / produção) ao publicar.
+const N8N_WEBHOOK_URL =
+  "http://localhost:5678/webhook/4b60c7f8-59e6-4dfe-8c0e-fd10a18bf14a";
+
 function PanicScreen() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
