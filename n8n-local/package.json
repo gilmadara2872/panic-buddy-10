@@ -1,0 +1,16 @@
+{
+  "name": "safeguard-n8n-local",
+  "version": "1.0.0",
+  "private": true,
+  "description": "n8n local pro SafeGuard - rode com: npm install && npm start",
+  "scripts": {
+    "start": "n8n start",
+    "postinstall": "echo \"\\n✅ n8n instalado! Agora rode: npm start\\n\""
+  },
+  "dependencies": {
+    "n8n": "1.70.4"
+  },
+  "engines": {
+    "node": ">=20.15 <=22.x"
+  }
+}
