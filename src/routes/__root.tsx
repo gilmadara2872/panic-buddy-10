@@ -85,6 +85,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@safeguard" },
+      { name: "twitter:title", content: "SafeGuard" },
+      { name: "twitter:description", content: "Aplicativo de segurança pessoal com botão de pânico e localização em tempo real." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ea0dd091-94b8-40ff-9a25-b4fa545ec4a7/id-preview-4c40c548--60832cfd-4b40-4f14-8fea-985444c23d94.lovable.app-1779332279132.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ea0dd091-94b8-40ff-9a25-b4fa545ec4a7/id-preview-4c40c548--60832cfd-4b40-4f14-8fea-985444c23d94.lovable.app-1779332279132.png" },
     ],
     links: [
       {
