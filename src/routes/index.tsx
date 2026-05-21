@@ -77,6 +77,20 @@ function PanicScreen() {
         } else {
           toast.success("Alerta enviado! Ajuda foi notificada.");
           setLastAlert({ lat: latitude, lng: longitude, at: new Date() });
+
+          // Dispara webhook do n8n (fire-and-forget)
+          fetch(N8N_WEBHOOK_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: profile.name,
+              phone: profile.phone,
+              latitude,
+              longitude,
+              timestamp: new Date().toISOString(),
+              maps_url: `https://www.google.com/maps?q=${latitude},${longitude}`,
+            }),
+          }).catch((err) => console.warn("n8n webhook falhou:", err));
         }
         setSending(false);
       },
