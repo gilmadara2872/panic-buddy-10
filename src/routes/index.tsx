@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Shield, MapPin, AlertTriangle, CheckCircle2, User, History } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -34,6 +33,34 @@ function PanicScreen() {
     lng: number;
     at: Date;
   } | null>(null);
+  const [report, setReport] = useState("");
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [tipo, setTipo] = useState("assalto");
+  const [compressing, setCompressing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function compressImage(file: File): Promise<string> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const max = 1280;
+        let w = img.width, h = img.height;
+        if (w > max || h > max) {
+          if (w > h) { h = (h * max) / w; w = max; }
+          else { w = (w * max) / h; h = max; }
+        }
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d")!;
+        ctx.drawImage(img, 0, 0, w, h);
+        URL.revokeObjectURL(url);
+        resolve(canvas.toDataURL("image/jpeg", 0.7));
+      };
+      img.src = url;
+    });
+  }
 
   useEffect(() => {
     const raw = localStorage.getItem("safeguard_profile");
@@ -54,6 +81,10 @@ function PanicScreen() {
       return;
     }
     if (sending) return;
+    if (report.length > 2000) {
+      toast.error("Relato muito longo (max 2000 caracteres).");
+      return;
+    }
     setSending(true);
 
     if (!("geolocation" in navigator)) {
@@ -65,16 +96,23 @@ function PanicScreen() {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
-        const { error } = await supabase.from("panic_alerts").insert({
-          name: profile.name,
-          phone: profile.phone,
-          latitude,
-          longitude,
-        });
-        if (error) {
-          toast.error("Falha ao enviar alerta. Tente novamente.");
-          console.error(error);
-        } else {
+        try {
+          toast.loading("Enviando alerta...");
+          const resp = await fetch("http://localhost:3001/api/alerts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: profile.name,
+              phone: profile.phone,
+              latitude,
+              longitude,
+              photo: photo || null,
+              report: report || null,
+              tipo,
+            }),
+          });
+          if (!resp.ok) throw new Error("falha ao salvar");
+          toast.dismiss();
           toast.success("Alerta enviado! Ajuda foi notificada.");
           setLastAlert({ lat: latitude, lng: longitude, at: new Date() });
 
@@ -89,8 +127,15 @@ function PanicScreen() {
               longitude,
               timestamp: new Date().toISOString(),
               maps_url: `https://www.google.com/maps?q=${latitude},${longitude}`,
+              photo: photo || null,
+              report: report || null,
+              tipo,
             }),
           }).catch((err) => console.warn("n8n webhook falhou:", err));
+        } catch (e) {
+          toast.dismiss();
+          toast.error("Falha ao enviar alerta. Tente novamente.");
+          console.error(e);
         }
         setSending(false);
       },
@@ -152,6 +197,74 @@ function PanicScreen() {
         <p className="mt-2 text-sm text-muted-foreground">
           Sua localização será enviada imediatamente.
         </p>
+      </div>
+
+      {/* Detalhes opcionais */}
+      <div className="mt-6 space-y-3 rounded-2xl bg-card p-4" style={{ boxShadow: "var(--shadow-card)" }}>
+        <label className="block text-sm font-medium">Relato do ocorrido (opcional)</label>
+        <select
+          value={tipo}
+          onChange={(e) => setTipo(e.target.value)}
+          className="w-full rounded-xl border border-border bg-input px-4 py-3 text-sm text-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/40"
+        >
+          <option value="assalto">Assalto</option>
+          <option value="violencia">Violência</option>
+          <option value="acidente">Acidente</option>
+          <option value="outro">Outro</option>
+        </select>
+        <textarea
+          value={report}
+          onChange={(e) => setReport(e.target.value)}
+          placeholder="Descreva o que está acontecendo..."
+          className="w-full rounded-xl border border-border bg-input px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/40"
+          rows={3}
+        />
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-2 rounded-xl bg-accent px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
+          >
+            <span>📷</span> {compressing ? "Comprimindo..." : photo ? "Foto anexada" : "Tirar foto"}
+          </button>
+          {photo && (
+            <button
+              type="button"
+              onClick={() => setPhoto(null)}
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
+              Remover
+            </button>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={async (e) => {
+              const f = e.target.files?.[0];
+              if (!f) return;
+              if (!f.type.startsWith("image/")) {
+                toast.error("Arquivo nao e imagem.");
+                return;
+              }
+              setCompressing(true);
+              try {
+                const compressed = await compressImage(f);
+                setPhoto(compressed);
+                toast.success("Foto comprimida e anexada.");
+              } catch {
+                toast.error("Falha ao processar foto.");
+              } finally {
+                setCompressing(false);
+              }
+            }}
+          />
+        </div>
+        {photo && (
+          <img src={photo} alt="evidencia" className="mt-2 max-h-40 rounded-xl object-cover" />
+        )}
       </div>
 
       {/* Panic button */}

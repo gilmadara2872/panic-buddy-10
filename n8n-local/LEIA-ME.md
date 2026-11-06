@@ -69,7 +69,7 @@ O webhook tá ativo em:
 http://localhost:5678/webhook/4b60c7f8-59e6-4dfe-8c0e-fd10a18bf14a
 ```
 
-Agora roda o SafeGuard normal (`bun dev`) e aperta o botão de pânico. O email vai pra `kennethcorrea@gmail.com`.
+Agora roda o SafeGuard normal (`bun dev`) e aperta o botão de pânico. O email de TESTE vai para o endereco configurado no no Send Email (altere para o email das autoridades em producao).
 
 ---
 

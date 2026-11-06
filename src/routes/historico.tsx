@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, MapPin, Clock, Phone, AlertTriangle } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/historico")({
   component: HistoryScreen,
@@ -28,16 +27,13 @@ function HistoryScreen() {
 
   useEffect(() => {
     (async () => {
-      const { data, error } = await supabase
-        .from("panic_alerts")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(100);
-      if (error) {
-        setError(error.message);
+      try {
+        const resp = await fetch("http://localhost:3001/api/alerts?page=1&limit=20");
+        const json = await resp.json();
+        setAlerts(json.data as Alert[]);
+      } catch (e) {
+        setError(String(e));
         setAlerts([]);
-      } else {
-        setAlerts(data as Alert[]);
       }
     })();
   }, []);

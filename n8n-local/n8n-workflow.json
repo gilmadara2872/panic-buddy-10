@@ -10,31 +10,50 @@
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [0, 0],
+      "position": [
+        0,
+        0
+      ],
       "id": "webhook-node",
       "name": "Webhook",
       "webhookId": "4b60c7f8-59e6-4dfe-8c0e-fd10a18bf14a"
     },
     {
       "parameters": {
-        "sendTo": "kennethcorrea@gmail.com",
+        "sendTo": "={{ $json.body.tipo === 'assalto' ? 'policia-assalto@exemplo.com' : $json.body.tipo === 'violencia' ? 'policia-violencia@exemplo.com' : 'autoridades@exemplo.com' }}",
         "subject": "🚨 Alerta de Panico - SafeGuard",
-        "text": "=Alerta de panico ativado!\n\nNome: {{ $json.body.name }}\nTelefone: {{ $json.body.phone }}\nData/Hora: {{ $json.body.timestamp }}\n\nLocalizacao:\nLatitude: {{ $json.body.latitude }}\nLongitude: {{ $json.body.longitude }}\n\nGoogle Maps: {{ $json.body.maps_url }}",
-        "options": {}
+        "text": "=Alerta de panico ativado!\n\nTipo: {{ $json.body.tipo }}\nNome: {{ $json.body.name }}\nTelefone: {{ $json.body.phone }}\nData/Hora: {{ $json.body.timestamp }}\nRelato: {{ $json.body.report }}\nFoto: {{ $json.body.photo }}\n\nLocalizacao:\nLatitude: {{ $json.body.latitude }}\nLongitude: {{ $json.body.longitude }}\n\nGoogle Maps: {{ $json.body.maps_url }}",
+        "options": {
+          "retryOnFail": true,
+          "maxTries": 3
+        }
       },
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2,
-      "position": [300, 0],
+      "position": [
+        300,
+        0
+      ],
       "id": "email-node",
       "name": "Send Email"
     }
   ],
   "connections": {
     "Webhook": {
-      "main": [[{ "node": "Send Email", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "settings": { "executionOrder": "v1" },
+  "settings": {
+    "executionOrder": "v1"
+  },
   "staticData": null,
   "tags": []
 }

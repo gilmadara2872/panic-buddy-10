@@ -1,0 +1,73 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: panic
+      POSTGRES_PASSWORD: panic123
+      POSTGRES_DB: panic_buddy
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - miniodata:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    environment:
+      DB_USER: panic
+      DB_HOST: postgres
+      DB_NAME: panic_buddy
+      DB_PASSWORD: panic123
+      DB_PORT: 5432
+      JWT_SECRET: change_me_in_production
+      CORS_ORIGIN: http://localhost:5173
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY: minioadmin
+      S3_SECRET_KEY: minioadmin
+      S3_BUCKET: panic-photos
+      MAX_PHOTO_BYTES: 5242880
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+      - minio
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+  n8n:
+    image: n8nio/n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=admin123
+    volumes:
+      - n8ndata:/home/node/.n8n
+
+volumes:
+  pgdata:
+  miniodata:
+  n8ndata:
