@@ -7,18 +7,6 @@ const rateLimit = require("express-rate-limit");
 const morgan = require("morgan");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
-
-const s3 = new S3Client({
-  endpoint: process.env.S3_ENDPOINT || "http://localhost:9000",
-  region: "us-east-1",
-  forcePathStyle: true,
-  credentials: {
-    accessKeyId: process.env.S3_ACCESS_KEY || "minioadmin",
-    secretAccessKey: process.env.S3_SECRET_KEY || "minioadmin",
-  },
-});
-const S3_BUCKET = process.env.S3_BUCKET || "panic-photos";
 
 const app = express();
 app.use(helmet());
@@ -57,31 +45,39 @@ function validatePhoto(photo) {
   return null;
 }
 
-async function uploadPhoto(photo) {
-  if (!photo) return null;
-  const base64 = photo.split(",")[1] || "";
-  const buf = Buffer.from(base64, "base64");
-  const key = `panic/${Date.now()}.jpg`;
-  await s3.send(
-    new PutObjectCommand({
-      Bucket: S3_BUCKET,
-      Key: key,
-      Body: buf,
-      ContentType: "image/jpeg",
-    }),
-  );
-  return `${process.env.S3_ENDPOINT || "http://localhost:9000"}/${S3_BUCKET}/${key}`;
-}
+const USERS = [
+  {
+    username: "admin",
+    passwordHash: bcrypt.hashSync(process.env.ADMIN_PASSWORD || "admin123", 10),
+  },
+];
+const crypto = require("crypto");
+const REFRESH_TOKENS = new Map();
 
-const USERS = [{ username: "admin", passwordHash: bcrypt.hashSync("admin123", 10) }];
 app.post("/api/auth/login", async (req, res) => {
   const { username, password } = req.body || {};
   const u = USERS.find((x) => x.username === username);
   if (!u || !(await bcrypt.compare(password || "", u.passwordHash))) {
     return res.status(401).json({ error: "credenciais invalidas" });
   }
-  const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: "8h" });
+  const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: "24h" });
+  const refreshToken = crypto.randomBytes(40).toString("hex");
+  REFRESH_TOKENS.set(refreshToken, username);
+  res.json({ token, refreshToken });
+});
+
+app.post("/api/auth/refresh", (req, res) => {
+  const { refreshToken } = req.body || {};
+  const username = REFRESH_TOKENS.get(refreshToken);
+  if (!username) return res.status(401).json({ error: "refresh invalido" });
+  const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: "24h" });
   res.json({ token });
+});
+
+app.post("/api/auth/logout", (req, res) => {
+  const { refreshToken } = req.body || {};
+  REFRESH_TOKENS.delete(refreshToken);
+  res.json({ ok: true });
 });
 
 function authMiddleware(req, res, next) {

@@ -32,6 +32,7 @@ function LoginScreen() {
       if (!resp.ok) throw new Error("credenciais invalidas");
       const json = await resp.json();
       localStorage.setItem("safeguard_admin_token", json.token);
+      if (json.refreshToken) localStorage.setItem("safeguard_admin_refresh", json.refreshToken);
       toast.success("Login realizado!");
       navigate({ to: "/historico" });
     } catch {

@@ -25,6 +25,9 @@ function HistoryScreen() {
   const navigate = useNavigate();
   const [alerts, setAlerts] = useState<Alert[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const limit = 20;
 
   useEffect(() => {
     const token = localStorage.getItem("safeguard_admin_token");
@@ -34,22 +37,46 @@ function HistoryScreen() {
     }
     (async () => {
       try {
-        const resp = await fetch("http://localhost:3001/api/alerts?page=1&limit=20", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        let currentToken = token;
+        const refreshToken = localStorage.getItem("safeguard_admin_refresh");
+        const doFetch = (t: string) =>
+          fetch(`http://localhost:3001/api/alerts?page=${page}&limit=${limit}`, {
+            headers: { Authorization: `Bearer ${t}` },
+          });
+        let resp = await doFetch(currentToken);
+        if (resp.status === 401 && refreshToken) {
+          const r = await fetch("http://localhost:3001/api/auth/refresh", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ refreshToken }),
+          });
+          if (r.ok) {
+            const j = await r.json();
+            currentToken = j.token;
+            localStorage.setItem("safeguard_admin_token", currentToken);
+            resp = await doFetch(currentToken);
+          } else {
+            localStorage.removeItem("safeguard_admin_token");
+            localStorage.removeItem("safeguard_admin_refresh");
+            navigate({ to: "/login" });
+            return;
+          }
+        }
         if (resp.status === 401) {
           localStorage.removeItem("safeguard_admin_token");
+          localStorage.removeItem("safeguard_admin_refresh");
           navigate({ to: "/login" });
           return;
         }
         const json = await resp.json();
         setAlerts(json.data as Alert[]);
+        setTotal(json.total as number);
       } catch (e) {
         setError(String(e));
         setAlerts([]);
       }
     })();
-  }, [navigate]);
+  }, [navigate, page]);
 
   return (
     <main className="min-h-screen bg-background px-6 pb-10 pt-12">
@@ -126,6 +153,28 @@ function HistoryScreen() {
           </article>
         ))}
       </section>
+
+      {total > limit && (
+        <div className="mt-6 flex items-center justify-between gap-3">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page <= 1}
+            className="rounded-xl bg-accent px-4 py-2 text-sm font-medium disabled:opacity-40"
+          >
+            Anterior
+          </button>
+          <span className="text-xs text-muted-foreground">
+            Página {page} de {Math.ceil(total / limit)}
+          </span>
+          <button
+            onClick={() => setPage((p) => p + 1)}
+            disabled={page >= Math.ceil(total / limit)}
+            className="rounded-xl bg-accent px-4 py-2 text-sm font-medium disabled:opacity-40"
+          >
+            Próxima
+          </button>
+        </div>
+      )}
     </main>
   );
 }

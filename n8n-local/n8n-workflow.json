@@ -10,7 +10,10 @@
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [0, 0],
+      "position": [
+        0,
+        0
+      ],
       "id": "webhook-node",
       "name": "Webhook",
       "webhookId": "4b60c7f8-59e6-4dfe-8c0e-fd10a18bf14a"
@@ -20,7 +23,7 @@
         "resource": "email",
         "operation": "send",
         "fromEmail": "safeguard@exemplo.com",
-        "toEmail": "={{ $json.body.tipo === 'assalto' ? 'policia-assalto@exemplo.com' : $json.body.tipo === 'violencia' ? 'policia-violencia@exemplo.com' : 'autoridades@exemplo.com' }}",
+        "toEmail": "={{ $json.body.tipo === 'assalto' ? 'comando@pm.pi.gov.br' : $json.body.tipo === 'violencia' ? 'ouvidoria@pc.pi.gov.br' : $json.body.tipo === 'acidente' ? 'comando@pm.pi.gov.br' : 'ouvidoria@pc.pi.gov.br' }}",
         "subject": "\ud83d\udea8 Alerta de Panico - SafeGuard",
         "emailFormat": "text",
         "text": "=Alerta de panico ativado!\n\nTipo: {{ $json.body.tipo }}\nNome: {{ $json.body.name }}\nTelefone: {{ $json.body.phone }}\nData/Hora: {{ $json.body.timestamp }}\nRelato: {{ $json.body.report }}\nFoto: {{ $json.body.photo }}\n\nLocalizacao:\nLatitude: {{ $json.body.latitude }}\nLongitude: {{ $json.body.longitude }}\n\nGoogle Maps: {{ $json.body.maps_url }}",
@@ -28,7 +31,10 @@
       },
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2,
-      "position": [300, 0],
+      "position": [
+        300,
+        0
+      ],
       "id": "email-node",
       "name": "Send Email",
       "credentials": {
