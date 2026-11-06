@@ -2,7 +2,12 @@
   "name": "SafeGuard - Alerta de Panico",
   "nodes": [
     {
-      "parameters": {},
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "4b60c7f8-59e6-4dfe-8c0e-fd10a18bf14a",
+        "responseMode": "onReceived",
+        "options": {}
+      },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [0, 0],
@@ -12,29 +17,45 @@
     },
     {
       "parameters": {
-        "sendTo": "kennethcorrea@gmail.com",
-        "subject": "🚨 Alerta de Panico - SafeGuard",
-        "text": "=Alerta de panico ativado!\n\nNome: {{ $json.body.name }}\nTelefone: {{ $json.body.phone }}\nData/Hora: {{ $json.body.timestamp }}\n\nLocalizacao:\nLatitude: {{ $json.body.latitude }}\nLongitude: {{ $json.body.longitude }}\n\nGoogle Maps: {{ $json.body.maps_url }}",
+        "resource": "email",
+        "operation": "send",
+        "fromEmail": "safeguard@exemplo.com",
+        "toEmail": "kennethcorrea@gmail.com",
+        "subject": "\ud83d\udea8 Alerta de Panico - SafeGuard",
+        "emailFormat": "text",
+        "text": "=Alerta de panico ativado!\n\nTipo: {{ $json.body.tipo }}\nNome: {{ $json.body.name }}\nTelefone: {{ $json.body.phone }}\nData/Hora: {{ $json.body.timestamp }}\nRelato: {{ $json.body.report }}\nFoto: {{ $json.body.photo }}\n\nLocalizacao:\nLatitude: {{ $json.body.latitude }}\nLongitude: {{ $json.body.longitude }}\n\nGoogle Maps: {{ $json.body.maps_url }}",
         "options": {}
       },
       "type": "n8n-nodes-base.emailSend",
-      "typeVersion": 1,
-      "position": [200, 0],
+      "typeVersion": 2,
+      "position": [300, 0],
       "id": "email-node",
       "name": "Send Email",
       "credentials": {
-        "smtp": ""
+        "smtp": {
+          "id": "",
+          "name": "SMTP"
+        }
       }
     }
   ],
   "connections": {
     "Webhook": {
-      "main": [[{"node": "Send Email", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
     "executionOrder": "v1"
   },
   "staticData": null,
-  "tags": []
+  "tags": [],
+  "active": false
 }

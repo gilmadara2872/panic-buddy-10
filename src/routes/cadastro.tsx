@@ -67,8 +67,7 @@ function CadastroScreen() {
         </div>
         <h1 className="mt-5 text-3xl font-bold tracking-tight">SafeGuard</h1>
         <p className="mt-2 max-w-xs text-sm text-muted-foreground">
-          Cadastre suas informações para que possamos enviar ajuda quando você
-          precisar.
+          Cadastre suas informações para que possamos enviar ajuda quando você precisar.
         </p>
       </div>
 

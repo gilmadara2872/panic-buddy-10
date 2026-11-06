@@ -11,8 +11,7 @@ export const Route = createFileRoute("/")({
       { title: "SafeGuard — Botão de Pânico" },
       {
         name: "description",
-        content:
-          "Aplicativo de segurança pessoal com botão de pânico e localização em tempo real.",
+        content: "Aplicativo de segurança pessoal com botão de pânico e localização em tempo real.",
       },
     ],
   }),
@@ -21,8 +20,7 @@ export const Route = createFileRoute("/")({
 type Profile = { name: string; phone: string };
 
 // URL do webhook do n8n (rodando local). Troque por uma URL pública (ngrok / n8n Cloud) ao publicar.
-const N8N_WEBHOOK_URL =
-  "http://localhost:5678/webhook-test/4b60c7f8-59e6-4dfe-8c0e-fd10a18bf14a";
+const N8N_WEBHOOK_URL = "http://localhost:5678/webhook/4b60c7f8-59e6-4dfe-8c0e-fd10a18bf14a";
 
 function PanicScreen() {
   const navigate = useNavigate();
@@ -46,10 +44,16 @@ function PanicScreen() {
       img.onload = () => {
         const canvas = document.createElement("canvas");
         const max = 1280;
-        let w = img.width, h = img.height;
+        let w = img.width,
+          h = img.height;
         if (w > max || h > max) {
-          if (w > h) { h = (h * max) / w; w = max; }
-          else { w = (w * max) / h; h = max; }
+          if (w > h) {
+            h = (h * max) / w;
+            w = max;
+          } else {
+            w = (w * max) / h;
+            h = max;
+          }
         }
         canvas.width = w;
         canvas.height = h;
@@ -140,9 +144,7 @@ function PanicScreen() {
         setSending(false);
       },
       (err) => {
-        toast.error(
-          "Não foi possível obter sua localização. Permita o acesso ao GPS.",
-        );
+        toast.error("Não foi possível obter sua localização. Permita o acesso ao GPS.");
         console.error(err);
         setSending(false);
       },
@@ -162,9 +164,7 @@ function PanicScreen() {
           </div>
           <div>
             <h1 className="text-base font-semibold leading-tight">SafeGuard</h1>
-            <p className="text-xs text-muted-foreground">
-              Olá, {profile?.name ?? "..."}
-            </p>
+            <p className="text-xs text-muted-foreground">Olá, {profile?.name ?? "..."}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -191,16 +191,17 @@ function PanicScreen() {
           <AlertTriangle className="h-3.5 w-3.5 text-destructive" />
           Em caso de emergência
         </div>
-        <h2 className="mt-4 text-3xl font-bold tracking-tight">
-          Pressione o botão
-        </h2>
+        <h2 className="mt-4 text-3xl font-bold tracking-tight">Pressione o botão</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Sua localização será enviada imediatamente.
         </p>
       </div>
 
       {/* Detalhes opcionais */}
-      <div className="mt-6 space-y-3 rounded-2xl bg-card p-4" style={{ boxShadow: "var(--shadow-card)" }}>
+      <div
+        className="mt-6 space-y-3 rounded-2xl bg-card p-4"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
         <label className="block text-sm font-medium">Relato do ocorrido (opcional)</label>
         <select
           value={tipo}

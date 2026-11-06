@@ -84,12 +84,12 @@ safeguard/
 
 ## 🔧 Solução de problemas
 
-| Problema | Solução |
-|----------|---------|
-| Email não chega | Verifique se o workflow está **Active** e se as credenciais SMTP estão corretas |
-| Webhook falha | Confirme que o n8n está rodando em `localhost:5678` |
-| CORS error | O n8n aceita requisições de `localhost:3000` por padrão |
-| Senha do Gmail rejeitada | Use uma **senha de app** do Google, não sua senha normal |
+| Problema                 | Solução                                                                         |
+| ------------------------ | ------------------------------------------------------------------------------- |
+| Email não chega          | Verifique se o workflow está **Active** e se as credenciais SMTP estão corretas |
+| Webhook falha            | Confirme que o n8n está rodando em `localhost:5678`                             |
+| CORS error               | O n8n aceita requisições de `localhost:3000` por padrão                         |
+| Senha do Gmail rejeitada | Use uma **senha de app** do Google, não sua senha normal                        |
 
 ---
 

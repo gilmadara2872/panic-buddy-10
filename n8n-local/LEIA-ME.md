@@ -30,11 +30,13 @@ No VS Code: clique direito na pasta `n8n-local` → **"Abrir em terminal integra
 
 **Windows:** dá dois cliques no `start-windows.bat`
 **ou no terminal:**
+
 ```bash
 start-windows.bat
 ```
 
 **Mac/Linux:**
+
 ```bash
 chmod +x start-mac-linux.sh
 ./start-mac-linux.sh
@@ -65,6 +67,7 @@ Quando aparecer `Editor is now accessible via: http://localhost:5678`, abre essa
 ## ✅ Pronto!
 
 O webhook tá ativo em:
+
 ```
 http://localhost:5678/webhook/4b60c7f8-59e6-4dfe-8c0e-fd10a18bf14a
 ```
@@ -75,9 +78,9 @@ Agora roda o SafeGuard normal (`bun dev`) e aperta o botão de pânico. O email 
 
 ## 🆘 Deu erro?
 
-| Erro | Solução |
-|---|---|
-| `command not found: npm` | Node não instalado. Volta no passo do Node v22 |
-| `EBADENGINE` ou erro de versão | Você não tá no Node v22. Confere `node -v` |
-| `EADDRINUSE :::5678` | Já tem n8n rodando. Fecha o outro terminal |
-| Email não chega | Workflow não tá **Active**, ou senha SMTP errada (usa senha de app, não a normal) |
+| Erro                           | Solução                                                                           |
+| ------------------------------ | --------------------------------------------------------------------------------- |
+| `command not found: npm`       | Node não instalado. Volta no passo do Node v22                                    |
+| `EBADENGINE` ou erro de versão | Você não tá no Node v22. Confere `node -v`                                        |
+| `EADDRINUSE :::5678`           | Já tem n8n rodando. Fecha o outro terminal                                        |
+| Email não chega                | Workflow não tá **Active**, ou senha SMTP errada (usa senha de app, não a normal) |

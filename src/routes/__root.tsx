@@ -7,6 +7,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  ErrorComponentProps,
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
@@ -33,7 +34,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
 
@@ -72,23 +73,44 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" },
+      {
+        name: "viewport",
+        content:
+          "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+      },
       { title: "SafeGuard" },
-      { name: "description", content: "Aplicativo de segurança pessoal com botão de pânico e localização em tempo real." },
+      {
+        name: "description",
+        content: "Aplicativo de segurança pessoal com botão de pânico e localização em tempo real.",
+      },
       { name: "author", content: "SafeGuard" },
       { name: "theme-color", content: "#0a0a1a" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "SafeGuard" },
       { property: "og:title", content: "SafeGuard" },
-      { property: "og:description", content: "Aplicativo de segurança pessoal com botão de pânico e localização em tempo real." },
+      {
+        property: "og:description",
+        content: "Aplicativo de segurança pessoal com botão de pânico e localização em tempo real.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@safeguard" },
       { name: "twitter:title", content: "SafeGuard" },
-      { name: "twitter:description", content: "Aplicativo de segurança pessoal com botão de pânico e localização em tempo real." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ea0dd091-94b8-40ff-9a25-b4fa545ec4a7/id-preview-4c40c548--60832cfd-4b40-4f14-8fea-985444c23d94.lovable.app-1779332279132.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ea0dd091-94b8-40ff-9a25-b4fa545ec4a7/id-preview-4c40c548--60832cfd-4b40-4f14-8fea-985444c23d94.lovable.app-1779332279132.png" },
+      {
+        name: "twitter:description",
+        content: "Aplicativo de segurança pessoal com botão de pânico e localização em tempo real.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ea0dd091-94b8-40ff-9a25-b4fa545ec4a7/id-preview-4c40c548--60832cfd-4b40-4f14-8fea-985444c23d94.lovable.app-1779332279132.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ea0dd091-94b8-40ff-9a25-b4fa545ec4a7/id-preview-4c40c548--60832cfd-4b40-4f14-8fea-985444c23d94.lovable.app-1779332279132.png",
+      },
     ],
     links: [
       {

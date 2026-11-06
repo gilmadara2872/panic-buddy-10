@@ -37,7 +37,9 @@ const pool = new Pool({
   port: Number(process.env.DB_PORT) || 5432,
 });
 
-pool.query("CREATE INDEX IF NOT EXISTS idx_panic_alerts_created_at ON panic_alerts (created_at DESC)").catch(() => {});
+pool
+  .query("CREATE INDEX IF NOT EXISTS idx_panic_alerts_created_at ON panic_alerts (created_at DESC)")
+  .catch(() => {});
 
 function sanitize(str) {
   if (typeof str !== "string") return str;
@@ -60,12 +62,14 @@ async function uploadPhoto(photo) {
   const base64 = photo.split(",")[1] || "";
   const buf = Buffer.from(base64, "base64");
   const key = `panic/${Date.now()}.jpg`;
-  await s3.send(new PutObjectCommand({
-    Bucket: S3_BUCKET,
-    Key: key,
-    Body: buf,
-    ContentType: "image/jpeg",
-  }));
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: S3_BUCKET,
+      Key: key,
+      Body: buf,
+      ContentType: "image/jpeg",
+    }),
+  );
   return `${process.env.S3_ENDPOINT || "http://localhost:9000"}/${S3_BUCKET}/${key}`;
 }
 
@@ -101,7 +105,7 @@ app.get("/api/alerts", authMiddleware, async (req, res) => {
   try {
     const { rows } = await pool.query(
       "SELECT id, name, phone, latitude, longitude, photo, report, tipo, created_at FROM panic_alerts ORDER BY created_at DESC LIMIT $1 OFFSET $2",
-      [limit, offset]
+      [limit, offset],
     );
     const { rows: c } = await pool.query("SELECT COUNT(*)::int AS total FROM panic_alerts");
     res.json({ data: rows, page, limit, total: c[0].total });
@@ -120,14 +124,22 @@ app.post("/api/alerts", async (req, res) => {
   if (photoErr) return res.status(400).json({ error: photoErr });
   let photoUrl = null;
   if (photo) {
-    try { photoUrl = await uploadPhoto(photo); }
-    catch (e) { photoUrl = photo; /* fallback base64 */ }
+    // Armazena a foto diretamente no banco (base64), sem depender de MinIO/S3.
+    photoUrl = photo;
   }
   const cleanReport = sanitize(report);
   try {
     const { rows } = await pool.query(
       "INSERT INTO panic_alerts (name, phone, latitude, longitude, photo, report, tipo) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *",
-      [sanitize(name), sanitize(phone), latitude, longitude, photoUrl, cleanReport, sanitize(tipo || "outro")]
+      [
+        sanitize(name),
+        sanitize(phone),
+        latitude,
+        longitude,
+        photoUrl,
+        cleanReport,
+        sanitize(tipo || "outro"),
+      ],
     );
     res.status(201).json(rows[0]);
   } catch (e) {

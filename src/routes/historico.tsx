@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, MapPin, Clock, Phone, AlertTriangle } from "lucide-react";
 
@@ -22,13 +22,26 @@ type Alert = {
 };
 
 function HistoryScreen() {
+  const navigate = useNavigate();
   const [alerts, setAlerts] = useState<Alert[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const token = localStorage.getItem("safeguard_admin_token");
+    if (!token) {
+      navigate({ to: "/login" });
+      return;
+    }
     (async () => {
       try {
-        const resp = await fetch("http://localhost:3001/api/alerts?page=1&limit=20");
+        const resp = await fetch("http://localhost:3001/api/alerts?page=1&limit=20", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (resp.status === 401) {
+          localStorage.removeItem("safeguard_admin_token");
+          navigate({ to: "/login" });
+          return;
+        }
         const json = await resp.json();
         setAlerts(json.data as Alert[]);
       } catch (e) {
@@ -36,7 +49,7 @@ function HistoryScreen() {
         setAlerts([]);
       }
     })();
-  }, []);
+  }, [navigate]);
 
   return (
     <main className="min-h-screen bg-background px-6 pb-10 pt-12">
@@ -50,9 +63,7 @@ function HistoryScreen() {
         </Link>
         <div>
           <h1 className="text-xl font-bold leading-tight">Histórico</h1>
-          <p className="text-xs text-muted-foreground">
-            Alertas de pânico registrados
-          </p>
+          <p className="text-xs text-muted-foreground">Alertas de pânico registrados</p>
         </div>
       </header>
 
@@ -74,9 +85,7 @@ function HistoryScreen() {
           </div>
         )}
 
-        {error && (
-          <p className="text-center text-sm text-destructive">{error}</p>
-        )}
+        {error && <p className="text-center text-sm text-destructive">{error}</p>}
 
         {alerts?.map((a) => (
           <article
@@ -111,9 +120,7 @@ function HistoryScreen() {
               </a>
               <div className="flex items-center gap-1.5 rounded-lg bg-accent px-2.5 py-2 text-muted-foreground">
                 <Clock className="h-3.5 w-3.5 shrink-0" />
-                <span className="truncate">
-                  {new Date(a.created_at).toLocaleString("pt-BR")}
-                </span>
+                <span className="truncate">{new Date(a.created_at).toLocaleString("pt-BR")}</span>
               </div>
             </div>
           </article>
