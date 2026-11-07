@@ -65,12 +65,12 @@ PORT=3001
 DB_USER=panic
 DB_HOST=localhost
 DB_NAME=panic_buddy
-DB_PASSWORD=panic123
+DB_PASSWORD=<defina no .env>
 DB_PORT=5432
-JWT_SECRET=change_me_in_production
+JWT_SECRET=<defina uma chave segura>
 CORS_ORIGIN=http://localhost:8080
 MAX_PHOTO_BYTES=5242880
-ADMIN_PASSWORD=admin123
+ADMIN_PASSWORD=<defina uma senha segura>
 ```
 
 ## Endpoints da API
@@ -96,7 +96,7 @@ ADMIN_PASSWORD=admin123
 ## Credenciais de Acesso
 
 - **Usuário comum**: cadastro na tela inicial (nome + telefone)
-- **Administrador**: usuário `admin` / senha definida em `ADMIN_PASSWORD` (padrão: `admin123`)
+- **Administrador**: usuário `admin` / senha definida em `ADMIN_PASSWORD` (gerada aleatoriamente se não definida)
 - Acesso ao histórico: http://localhost:8080/login
 
 ## Contatos Oficiais das Autoridades (Piauí)

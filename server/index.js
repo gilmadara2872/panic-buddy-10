@@ -45,13 +45,21 @@ function validatePhoto(photo) {
   return null;
 }
 
+const crypto = require("crypto");
+const adminPassword = process.env.ADMIN_PASSWORD;
+if (!adminPassword) {
+  console.warn("AVISO: ADMIN_PASSWORD nao definido. Gerando senha aleatoria. Verifique os logs do backend.");
+}
+const generatedPassword = adminPassword || crypto.randomBytes(12).toString("hex");
+if (!adminPassword) {
+  console.warn("Senha admin gerada:", generatedPassword);
+}
 const USERS = [
   {
     username: "admin",
-    passwordHash: bcrypt.hashSync(process.env.ADMIN_PASSWORD || "admin123", 10),
+    passwordHash: bcrypt.hashSync(generatedPassword, 10),
   },
 ];
-const crypto = require("crypto");
 const REFRESH_TOKENS = new Map();
 
 app.post("/api/auth/login", async (req, res) => {

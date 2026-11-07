@@ -2,7 +2,7 @@
 
 ## 1. PostgreSQL (ja instalado)
 
-Banco: panic_buddy, usuario: panic, senha: panic123, porta 5432.
+Banco: panic_buddy, usuario: panic, senha: <defina no .env>, porta 5432.
 Tabela panic_alerts criada automaticamente.
 
 ## 2. Backend (Node/Express)
