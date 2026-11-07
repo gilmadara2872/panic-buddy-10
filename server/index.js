@@ -48,7 +48,9 @@ function validatePhoto(photo) {
 const crypto = require("crypto");
 const adminPassword = process.env.ADMIN_PASSWORD;
 if (!adminPassword) {
-  console.warn("AVISO: ADMIN_PASSWORD nao definido. Gerando senha aleatoria. Verifique os logs do backend.");
+  console.warn(
+    "AVISO: ADMIN_PASSWORD nao definido. Gerando senha aleatoria. Verifique os logs do backend.",
+  );
 }
 const generatedPassword = adminPassword || crypto.randomBytes(12).toString("hex");
 if (!adminPassword) {

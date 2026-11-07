@@ -10,10 +10,7 @@
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [
-        0,
-        0
-      ],
+      "position": [0, 0],
       "id": "webhook-node",
       "name": "Webhook",
       "webhookId": "4b60c7f8-59e6-4dfe-8c0e-fd10a18bf14a"
@@ -31,10 +28,7 @@
       },
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2,
-      "position": [
-        300,
-        0
-      ],
+      "position": [300, 0],
       "id": "email-node",
       "name": "Send Email",
       "credentials": {

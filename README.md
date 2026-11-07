@@ -5,6 +5,7 @@ Aplicativo de segurança pessoal com botão de pânico, captura de localização
 ## Visão Geral
 
 O SafeGuard permite que um usuário, em situação de emergência, pressione um botão que:
+
 - Captura a localização GPS do dispositivo
 - Anexa uma foto (opcional)
 - Registra um relato (opcional)
@@ -75,14 +76,14 @@ ADMIN_PASSWORD=<defina uma senha segura>
 
 ## Endpoints da API
 
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| GET | `/api/health` | Health check |
-| POST | `/api/auth/login` | Login admin (retorna token + refreshToken) |
-| POST | `/api/auth/refresh` | Renova access token |
-| POST | `/api/auth/logout` | Invalida refresh token |
-| GET | `/api/alerts?page=1&limit=20` | Lista alertas (requer Bearer token) |
-| POST | `/api/alerts` | Cria alerta de pânico |
+| Método | Rota                          | Descrição                                  |
+| ------ | ----------------------------- | ------------------------------------------ |
+| GET    | `/api/health`                 | Health check                               |
+| POST   | `/api/auth/login`             | Login admin (retorna token + refreshToken) |
+| POST   | `/api/auth/refresh`           | Renova access token                        |
+| POST   | `/api/auth/logout`            | Invalida refresh token                     |
+| GET    | `/api/alerts?page=1&limit=20` | Lista alertas (requer Bearer token)        |
+| POST   | `/api/alerts`                 | Cria alerta de pânico                      |
 
 ## Fluxo de Uso
 
@@ -101,11 +102,11 @@ ADMIN_PASSWORD=<defina uma senha segura>
 
 ## Contatos Oficiais das Autoridades (Piauí)
 
-| Instituição | E-mail | Tipo de ocorrência |
-|-------------|--------|-------------------|
-| Polícia Militar do Piauí | comando@pm.pi.gov.br | Assalto, Acidente |
-| Polícia Civil do Piauí | ouvidoria@pc.pi.gov.br | Violência, Outros |
-| Polícia Federal | Fala.BR (plataforma web) | Não possui e-mail direto |
+| Instituição              | E-mail                   | Tipo de ocorrência       |
+| ------------------------ | ------------------------ | ------------------------ |
+| Polícia Militar do Piauí | comando@pm.pi.gov.br     | Assalto, Acidente        |
+| Polícia Civil do Piauí   | ouvidoria@pc.pi.gov.br   | Violência, Outros        |
+| Polícia Federal          | Fala.BR (plataforma web) | Não possui e-mail direto |
 
 ## Testes
 
