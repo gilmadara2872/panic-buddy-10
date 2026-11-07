@@ -22,7 +22,7 @@ Frontend (Vite + React + TanStack Router)  →  Backend (Node/Express)  →  Pos
 ## Pré-requisitos
 
 - Node.js v20+ (testado com v26)
-- PostgreSQL 16+ com banco `panic_buddy` e usuário `panic` / senha `panic123`
+- PostgreSQL 16+ com banco `panic_buddy` e usuário `panic` (senha definida no .env)
 - n8n (Docker) rodando em `localhost:5678`
 - Mailpit (opcional, para testes de e-mail) em `localhost:8025`
 
